@@ -282,33 +282,88 @@ const Audio_ = (() => {
   };
 })();
 
-  /* ---------------------------------------------------------
-     1. Gate
-     --------------------------------------------------------- */
-  const gate = document.getElementById('gate');
-  const gateOpenBtn = document.getElementById('gate-open');
-  const soundToggle = document.getElementById('sound-toggle');
-  const body = document.body;
+ /* ---------------------------------------------------------
+   1. Gate
+   --------------------------------------------------------- */
+
+const gate = document.getElementById('gate');
+const gateOpenBtn = document.getElementById('gate-open');
+const soundToggle = document.getElementById('sound-toggle');
+const body = document.body;
+
+if (gate && gateOpenBtn) {
 
   gateOpenBtn.addEventListener('click', () => {
+
+    // Turn sound on
     Audio_.setEnabled(true);
-    soundToggle.setAttribute('aria-pressed', 'true');
-    Audio_.chime([392, 523.25, 659.25]);
+
+    if (soundToggle) {
+      soundToggle.setAttribute(
+        'aria-pressed',
+        'true'
+      );
+    }
+
+    // Opening chime
+    Audio_.chime([
+      392,
+      523.25,
+      659.25
+    ]);
+
+    // Open the gate
     gate.classList.add('opened');
-    body.classList.add('story-active');
-    body.classList.remove('locked');
-    // gentle scroll nudge so it's obvious the page moves
+
+    body.classList.add(
+      'story-active'
+    );
+
+    body.classList.remove(
+      'locked'
+    );
+
+    // Gentle scroll nudge
     setTimeout(() => {
-      window.scrollBy({ top: 2, behavior: 'smooth' });
+      window.scrollBy({
+        top: 2,
+        behavior: 'smooth'
+      });
     }, 900);
+
   });
 
+}
+
+
+/* ---------------------------------------------------------
+   Sound toggle
+   --------------------------------------------------------- */
+
+if (soundToggle) {
+
   soundToggle.addEventListener('click', () => {
-    const isOn = soundToggle.getAttribute('aria-pressed') === 'true';
-    soundToggle.setAttribute('aria-pressed', String(!isOn));
-    Audio_.setEnabled(!isOn);
-    if (!isOn) Audio_.tick();
+
+    const isOn =
+      soundToggle.getAttribute(
+        'aria-pressed'
+      ) === 'true';
+
+    const newState = !isOn;
+
+    soundToggle.setAttribute(
+      'aria-pressed',
+      String(newState)
+    );
+
+    Audio_.setEnabled(newState);
+
+    if (newState) {
+      Audio_.tick();
+    }
+
   });
+}
 
   /* ---------------------------------------------------------
      2. Reveal on scroll
