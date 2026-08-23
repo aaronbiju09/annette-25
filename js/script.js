@@ -8,99 +8,225 @@
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ---------------------------------------------------------
-     0. Audio engine (Web Audio API, fully synthesized)
-     --------------------------------------------------------- */
-  const Audio_ = (() => {
-    let ctx = null;
-    let masterGain = null;
-    let ambientNodes = [];
-    let enabled = false;
-    let started = false;
+ /* ---------------------------------------------------------
+   0. Audio engine (Web Audio API - soft emotional ambience)
+   --------------------------------------------------------- */
+const Audio_ = (() => {
+  let ctx = null;
+  let masterGain = null;
+  let enabled = false;
+  let started = false;
+  let ambientTimer = null;
 
-    function ensureCtx() {
-      if (!ctx) {
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if (!AC) return null;
-        ctx = new AC();
-        masterGain = ctx.createGain();
-        masterGain.gain.value = 0.55;
-        masterGain.connect(ctx.destination);
-      }
-      if (ctx.state === 'suspended') ctx.resume();
-      return ctx;
+  function ensureCtx() {
+    if (!ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+
+      ctx = new AC();
+
+      masterGain = ctx.createGain();
+      masterGain.gain.value = 0.32;
+      masterGain.connect(ctx.destination);
     }
 
-    function startAmbient() {
-  return;
-}
-
-
-    function pluck(freq = 660, dur = 0.4, type = 'sine', vol = 0.18, delay = 0) {
-      const c = ensureCtx();
-      if (!c || !enabled) return;
-      const t0 = c.currentTime + delay;
-      const osc = c.createOscillator();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, t0);
-      const g = c.createGain();
-      g.gain.setValueAtTime(0.0001, t0);
-      g.gain.exponentialRampToValueAtTime(vol, t0 + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-      osc.connect(g);
-      g.connect(masterGain);
-      osc.start(t0);
-      osc.stop(t0 + dur + 0.05);
+    if (ctx.state === 'suspended') {
+      ctx.resume();
     }
 
-    function chime(notes = [523.25, 659.25, 783.99, 1046.5], gap = 0.11) {
-      notes.forEach((n, i) => pluck(n, 0.9, 'sine', 0.14, i * gap));
+    return ctx;
+  }
+
+  /* Soft emotional background melody */
+  function playAmbientNote(freq, duration = 2.8, volume = 0.035) {
+    const c = ensureCtx();
+    if (!c || !enabled) return;
+
+    const now = c.currentTime;
+
+    const osc = c.createOscillator();
+    const gain = c.createGain();
+    const filter = c.createBiquadFilter();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, now);
+
+    filter.type = 'lowpass';
+    filter.frequency.value = 1200;
+    filter.Q.value = 0.4;
+
+    gain.gain.setValueAtTime(0.0001, now);
+
+    // Gentle fade in
+    gain.gain.exponentialRampToValueAtTime(
+      volume,
+      now + 0.8
+    );
+
+    // Gentle fade out
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      now + duration
+    );
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(masterGain);
+
+    osc.start(now);
+    osc.stop(now + duration + 0.1);
+  }
+
+  function startAmbient() {
+    const c = ensureCtx();
+    if (!c || started) return;
+
+    started = true;
+
+    // Warm, emotional progression
+    const melody = [
+      261.63, // C
+      329.63, // E
+      392.00, // G
+      329.63, // E
+
+      293.66, // D
+      349.23, // F
+      440.00, // A
+      349.23, // F
+
+      261.63, // C
+      329.63, // E
+      392.00, // G
+      523.25  // high C
+    ];
+
+    let index = 0;
+
+    function nextNote() {
+      if (!enabled) return;
+
+      playAmbientNote(
+        melody[index],
+        3.2,
+        0.035
+      );
+
+      index = (index + 1) % melody.length;
     }
 
-    function tick() { pluck(880, 0.08, 'triangle', 0.1); }
-    function soft() { pluck(220, 0.5, 'sine', 0.12); }
+    nextNote();
 
-    function setEnabled(v) {
-      enabled = v;
-      if (v) {
-        ensureCtx();
-        startAmbient();
-        if (Audio_._bus) Audio_._bus.gain.linearRampToValueAtTime(1, ctx.currentTime + 1.2);
-      } else if (Audio_._bus && ctx) {
-        Audio_._bus.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.6);
-      }
+    ambientTimer = setInterval(nextNote, 2400);
+  }
+
+  function stopAmbient() {
+    if (ambientTimer) {
+      clearInterval(ambientTimer);
+      ambientTimer = null;
     }
 
-    return { setEnabled, pluck, chime, tick, soft, get enabled() { return enabled; } };
-  })();
+    started = false;
+  }
 
-  /* ---------------------------------------------------------
-     1. Gate
-     --------------------------------------------------------- */
-  const gate = document.getElementById('gate');
-  const gateOpenBtn = document.getElementById('gate-open');
-  const soundToggle = document.getElementById('sound-toggle');
-  const body = document.body;
+  /* Small interaction sound */
+  function pluck(
+    freq = 660,
+    dur = 0.4,
+    type = 'sine',
+    vol = 0.12,
+    delay = 0
+  ) {
+    const c = ensureCtx();
+    if (!c || !enabled) return;
 
-  gateOpenBtn.addEventListener('click', () => {
-    Audio_.setEnabled(true);
-    soundToggle.setAttribute('aria-pressed', 'true');
-    Audio_.chime([392, 523.25, 659.25]);
-    gate.classList.add('opened');
-    body.classList.add('story-active');
-    body.classList.remove('locked');
-    // gentle scroll nudge so it's obvious the page moves
-    setTimeout(() => {
-      window.scrollBy({ top: 2, behavior: 'smooth' });
-    }, 900);
-  });
+    const t0 = c.currentTime + delay;
 
-  soundToggle.addEventListener('click', () => {
-    const isOn = soundToggle.getAttribute('aria-pressed') === 'true';
-    soundToggle.setAttribute('aria-pressed', String(!isOn));
-    Audio_.setEnabled(!isOn);
-    if (!isOn) Audio_.tick();
-  });
+    const osc = c.createOscillator();
+    const g = c.createGain();
+
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+
+    g.gain.setValueAtTime(0.0001, t0);
+
+    g.gain.exponentialRampToValueAtTime(
+      vol,
+      t0 + 0.03
+    );
+
+    g.gain.exponentialRampToValueAtTime(
+      0.0001,
+      t0 + dur
+    );
+
+    osc.connect(g);
+    g.connect(masterGain);
+
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.05);
+  }
+
+  /* Emotional opening chime */
+  function chime(
+    notes = [523.25, 659.25, 783.99, 1046.5],
+    gap = 0.13
+  ) {
+    notes.forEach((n, i) => {
+      pluck(
+        n,
+        1.2,
+        'sine',
+        0.10,
+        i * gap
+      );
+    });
+  }
+
+  /* Tiny button sound */
+  function tick() {
+    pluck(
+      880,
+      0.12,
+      'triangle',
+      0.07
+    );
+  }
+
+  /* Soft low sound */
+  function soft() {
+    pluck(
+      220,
+      0.7,
+      'sine',
+      0.08
+    );
+  }
+
+  function setEnabled(v) {
+    enabled = v;
+
+    const c = ensureCtx();
+    if (!c) return;
+
+    if (v) {
+      startAmbient();
+    } else {
+      stopAmbient();
+    }
+  }
+
+  return {
+    setEnabled,
+    pluck,
+    chime,
+    tick,
+    soft,
+    get enabled() {
+      return enabled;
+    }
+  };
+})();
 
   /* ---------------------------------------------------------
      2. Reveal on scroll
