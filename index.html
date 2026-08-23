@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<title>Pluppy Chundu Muthus Shutumani Moti Takli, a.k.a. Annette — 25</title>
+<meta name="description" content="A little world, built for ente Pluppyy!. Happy 25th, Chechiyee!." />
+
+<!-- Fonts: Fraunces (display serif), Manrope (body sans), Caveat (handwritten accents) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700;800&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="locked">
+
+<!-- ambient background canvas: soft drifting particles, theme-tinted per act -->
+<canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+<!-- grain / noise overlay for texture -->
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============ GATE (opening interaction) ============ -->
+<div id="gate">
+  <div class="gate-inner">
+    <p class="gate-eyebrow">for my lidiya chechi</p>
+    <h1 class="gate-title">There's something<br>here for you 
+      (Not ure cherry red waala IPHONE!!).</h1>
+    <p class="gate-sub">(yes, you. put the phone brightness up, Bro's orders)</p>
+    <button id="gate-open" class="gate-button" aria-label="Open your gift">
+      <span class="gate-button-text">Open it</span>
+      <span class="gate-button-ring" aria-hidden="true"></span>
+    </button>
+    <p class="gate-hint">best with sound on hehe<span aria-hidden="true">🔊</span></p>
+  </div>
+</div>
+
+<!-- persistent sound toggle, appears after gate opens -->
+<button id="sound-toggle" class="sound-toggle" aria-label="Toggle sound" aria-pressed="false">
+  <svg class="icon-sound-on" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round"/><path d="M19 6a9 9 0 0 1 0 12" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.6"/></svg>
+  <svg class="icon-sound-off" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 5V4L8 9H4z" fill="currentColor"/><path d="M16 9l5 5M21 9l-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+</button>
+
+<!-- progress spine -->
+<div id="progress-spine" aria-hidden="true"><div id="progress-fill"></div></div>
+
+<main id="story">
+
+  <!-- ============ ACT 0 — THE HOOK ============ -->
+  <section class="act" id="act-hook" data-theme="cream">
+    <div class="act-inner center">
+      <p class="reveal eyebrow">okay so</p>
+      <h2 class="reveal display-lg">
+        Your takla has spent way<br>too many nights on this.
+      </h2>
+      <p class="reveal body-lg dim">
+        No cake emoji. No "Happy Birthday Annette 🎂" and a stock photo of balloons.
+        You know me better than that.. and honestly.. so do I.
+      </p>
+      <p class="reveal body-lg dim">
+        This one has receipts..
+      </p>
+      <div class="scroll-cue reveal" aria-hidden="true">
+        <span>keep going</span>
+        <div class="scroll-cue-line"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACT I — HER BEGINNING ============ -->
+  <section class="act" id="act-beginning" data-theme="cream">
+    <div class="act-inner">
+      <p class="reveal eyebrow">once upon a time, 2001</p>
+      <h2 class="reveal display-md">Before you were my Pluppy,<br>you were just — new.</h2>
+
+      <figure class="photo-hero reveal">
+        <img src="assets/photos/child-02.jpg" alt="Annette as a young girl, in a traditional pink and gold outfit, studio portrait" loading="lazy">
+        <figcaption class="handwritten">the earliest one I've got of you</figcaption>
+      </figure>
+
+      <p class="reveal body-lg">
+        I don't actually remember a lot from back then ofc u being the eldest and I was too small,
+        But somewhere in that gap, you became the person who checks if I've
+        eaten before you ask about literally anything else.
+      </p>
+
+      <div class="polaroid-pair reveal">
+        <figure class="polaroid rotate-l">
+          <img src="assets/photos/child-01.jpg" alt="Annette laughing with eyes closed, hair wet, standing in shallow water at the beach with her younger brother in a red shirt" loading="lazy">
+          <figcaption class="handwritten">our cute sa juhu pic hehe</figcaption>
+        </figure>
+        <figure class="polaroid rotate-r">
+          <img src="assets/photos/child-03.jpg" alt="A young Annette holding her baby brother by a tree" loading="lazy">
+          <figcaption class="handwritten">you, holding me, before I could even hold myself together</figcaption>
+        </figure>
+      </div>
+
+      <p class="reveal body-lg">
+        That second one gets me a little. You were holding me before I could even sit up on my
+        own. Twenty-five years later and honestly? Not much has changed.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ ACT II — THE NAMES ============ -->
+  <section class="act act-dark" id="act-names" data-theme="teal">
+    <div class="act-inner center">
+      <p class="reveal eyebrow light">a brief, unnecessary investigation</p>
+      <h2 class="reveal display-md light">How many names<br>does one person need?</h2>
+
+      <div class="joke-sequence reveal" id="joke-sequence">
+        <p class="joke-line" data-line="0">"Annette?"</p>
+        <p class="joke-line" data-line="1">Sounds official. Sounds like a name on a nursing license.</p>
+        <p class="joke-line" data-line="2">"Lidiya?"</p>
+        <p class="joke-line" data-line="3">Getting warmer.</p>
+        <p class="joke-line" data-line="4">"Pluppy?"</p>
+        <p class="joke-line" data-line="5">Okay. Now we're talking.</p>
+        <button class="joke-continue" id="joke-continue">tap to continue<span aria-hidden="true"> →</span></button>
+      </div>
+
+      <p class="light body-lg names-intro reveal hidden-until-joke">
+        Turns out you have at least six+ names, depending on how much trouble you're in
+        or how much I need something from the kitchen. Tap each one.
+      </p>
+
+      <div class="name-constellation hidden-until-joke" id="name-constellation">
+        <button class="name-card" data-name="pluppy" style="--i:0">
+          <span class="name-front">Pluppy</span>
+          <span class="name-back">Comes from ure cutu sa cheeks.. The cheeks earned this one. hehe</span>
+        </button>
+        <button class="name-card" data-name="chundu" style="--i:1">
+          <span class="name-front">Chundu</span>
+          <span class="name-back">Basically just "cutu." No further questions, your honor.</span>
+        </button>
+        <button class="name-card" data-name="muthus" style="--i:2">
+          <span class="name-front">Muthus</span>
+          <span class="name-back">Means "ente muthe aa my gem." </span>
+        </button>
+        <button class="name-card" data-name="shutumani" style="--i:3">
+          <span class="name-front">Shutumani</span>
+          <span class="name-back">There is no meaning. There is no story. It just is. It's a sibling thing.</span>
+        </button>
+        <button class="name-card" data-name="moti" style="--i:4">
+          <span class="name-front">Moti</span>
+          <span class="name-back">We call each other this. It goes both ways. It's a whole system.</span>
+        </button>
+        <button class="name-card" data-name="takli" style="--i:5">
+          <span class="name-front">Takli</span>
+          <span class="name-back">Also mutual. Also a whole system. Ask me nothing further.</span>
+        </button>
+      </div>
+
+      <p class="light body-lg names-outro hidden-until-all-named" id="names-outro">
+        so many names. One person. And underneath every single one of them —
+        <span class="handwritten-inline">still just ente Annette. Still just my chechi.</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ ACT III — THE CHAOS ============ -->
+  <section class="act" id="act-chaos" data-theme="cream">
+    <div class="act-inner">
+      <p class="reveal eyebrow">exhibit A through Z</p>
+      <h2 class="reveal display-md">This is what "chaotic<br>but affectionate" looks like.</h2>
+      <p class="reveal body-lg">
+        We don't really do calm. We do stupid faces, filters neither of us remember choosing,
+        and photos that exist purely because one of us grabbed the phone at the wrong moment.
+        Exhibit:
+      </p>
+
+      <div class="chaos-grid reveal">
+        <figure class="chaos-item span-2"><video src="assets/video/chaos-01.mp4" poster="assets/photos/chaos-poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Annette laughing while eating fries"></video><figcaption>caught mid-bite, zero regrets</figcaption></figure>
+        <figure class="chaos-item"><img src="assets/photos/us-03.jpg" alt="Black and white selfie with pink heart filter" loading="lazy"></figure>
+        <figure class="chaos-item"><img src="assets/photos/us-06.jpg" alt="Another black and white selfie with heart filter" loading="lazy"></figure>
+        <figure class="chaos-item"><img src="assets/photos/us-04.jpg" alt="A deliberately ridiculous scrunched-up face selfie" loading="lazy"><figcaption>this face. this exact face.</figcaption></figure>
+        <figure class="chaos-item"><img src="assets/photos/us-16.jpg" alt="Candid selfie captioned Drained" loading="lazy"><figcaption class="handwritten">"Drained." — you, always</figcaption></figure>
+        <figure class="chaos-item"><img src="assets/photos/us-07.jpg" alt="Sideways selfie in a car" loading="lazy"></figure>
+        <figure class="chaos-item"><img src="assets/photos/us-02.jpg" alt="Mirror selfie under a paper lantern light" loading="lazy"></figure>
+      </div>
+
+      <div class="mini-game reveal">
+        <p class="body-md dim center-text">one important sibling ritual, demonstrated:</p>
+        <div class="seesaw" id="seesaw">
+          <button class="seesaw-btn" id="seesaw-btn" aria-label="Toggle between Moti and Takli">
+            <span class="seesaw-label seesaw-moti">MOTI</span>
+            <span class="seesaw-label seesaw-takli">TAKLI</span>
+          </button>
+        </div>
+        <p class="seesaw-count body-sm dim center-text" id="seesaw-count"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACT IV — GROWING UP ============ -->
+  <section class="act" id="act-growing" data-theme="cream">
+    <div class="act-inner">
+      <p class="reveal eyebrow">fast forward, badly</p>
+      <h2 class="reveal display-md">Somewhere in here, we<br>both just... grew up.</h2>
+      <p class="reveal body-lg">
+        Nobody tells you it happens in the background of a hundred normal, unremarkable days.
+        No single moment. Just — one year you're this small, and the next you're not, and
+        somehow the phone caught most of it by accident.
+      </p>
+
+      <div class="timeline-strip reveal" id="timeline-strip">
+        <figure class="timeline-item"><img src="assets/photos/child-04.jpg" alt="Annette and her brother dressed formally, indoors at night" loading="lazy"></figure>
+        <figure class="timeline-item"><img src="assets/photos/child-06.jpg" alt="Another close childhood selfie" loading="lazy"></figure>
+        <figure class="timeline-item"><img src="assets/photos/child-07.jpg" alt="Childhood photo, Annette holding a toddler" loading="lazy"></figure>
+        <figure class="timeline-item featured"><img src="assets/photos/grow-03.jpg" alt="Annette leaning out a window, smiling" loading="lazy"></figure>
+      </div>
+
+      <div class="then-again reveal">
+        <p class="body-md dim center-text">and then, somehow, it happened again —</p>
+        <div class="then-again-pair">
+          <figure class="then-again-item"><img src="assets/photos/grow-01.jpg" alt="Annette and her brother taking a mall selfie, years apart from a similar photo" loading="lazy"><figcaption class="handwritten">then</figcaption></figure>
+          <figure class="then-again-item"><img src="assets/photos/us-01.jpg" alt="Nearly the same pose, a different year" loading="lazy"><figcaption class="handwritten">and then again</figcaption></figure>
+        </div>
+        <p class="body-sm dim center-text">same lean, same smile, completely different years. some things just don't move.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACT V — US ============ -->
+  <section class="act act-dark" id="act-us" data-theme="teal">
+    <div class="act-inner">
+      <p class="reveal eyebrow light">the actual point of this website</p>
+      <h2 class="reveal display-md light">Okay. This part<br>is about us.</h2>
+
+      <p class="reveal body-lg light">
+        Here's the honest version of our dynamic: I tease you constantly. You pamper me more
+        than I probably deserve, and definitely more than you let on. I cook for you when
+        you're too tired to think about food. I still show up at the station to pick you up,
+        every time, no questions — well, a few questions, but I still show up. Somewhere
+        between the teasing and the picking-up, that's just... us.
+      </p>
+
+      <figure class="photo-hero reveal">
+        <img src="assets/photos/trip-03.jpg" alt="Annette and her brother standing inside a heart-shaped light installation at night" loading="lazy">
+        <figcaption class="handwritten">we did not plan to stand in a giant heart. it just worked out that way.</figcaption>
+      </figure>
+
+      <div class="scrapbook-wall reveal" id="scrapbook-wall">
+        <img src="assets/photos/us-01.jpg" alt="Close selfie in warm light" loading="lazy">
+        <img src="assets/photos/us-08.jpg" alt="Portrait together outdoors under a flowering tree" loading="lazy">
+        <img src="assets/photos/us-12.jpg" alt="A tight hug outdoors" loading="lazy">
+        <img src="assets/photos/us-11.jpg" alt="Close selfie, elephant print top" loading="lazy">
+        <img src="assets/photos/us-05.jpg" alt="Cheek to cheek smiling selfie" loading="lazy">
+        <img src="assets/photos/formal-03.jpg" alt="Dressed up together, white curtain backdrop" loading="lazy">
+        <img src="assets/photos/trip-01.jpg" alt="Standing together overlooking tea plantations in the hills" loading="lazy">
+        <img src="assets/photos/trip-02.jpg" alt="Standing together in front of a waterfall" loading="lazy">
+        <img src="assets/photos/us-13.jpg" alt="Selfie together at an event" loading="lazy">
+        <img src="assets/photos/us-14.jpg" alt="Close selfie at a train platform" loading="lazy">
+        <img src="assets/photos/us-15.jpg" alt="Sitting together at a train station, laughing" loading="lazy">
+        <img src="assets/photos/formal-01.jpg" alt="Dressed up together at an event, teal backdrop" loading="lazy">
+        <img src="assets/photos/formal-02.jpg" alt="Together at an event, Annette holding a bouquet" loading="lazy">
+        <img src="assets/photos/formal-05.jpg" alt="Standing together outside a yellow house" loading="lazy">
+      </div>
+
+      <div class="cake-moment reveal">
+        <figure class="photo-hero small">
+          <img src="assets/photos/formal-06.jpg" alt="Annette and her brother cutting two birthday cakes together, candles lit" loading="lazy">
+          <figcaption class="handwritten light">two cakes, one table, zero restraint</figcaption>
+        </figure>
+        <p class="body-lg light">
+          We've cut cakes together over the years. This is just one more.
+          Except this time, you don't get to see the site until after you've made a wish.
+          (Yes, I'm serious. Scroll back up if you skipped it.)
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACT VI — THE NURSE ============ -->
+  <section class="act" id="act-nurse" data-theme="cream">
+    <div class="act-inner">
+      <p class="reveal eyebrow">the part I'm actually proud of</p>
+      <h2 class="reveal display-md">You're the best nurse <br>I know. Not "one of."</h2>
+      <p class="reveal body-lg">
+        I don't say that lightly, and I definitely don't say it to your face enough. You take
+        care of strangers for a living, with the same soft heart you've always had — the one
+        that gets a little too mad sometimes, sure, because you're human, but underneath that
+        is someone who genuinely cares whether people are okay. That's rarer than people think.
+        MY TEAM LEADER!!
+      </p>
+
+      <div class="milestone-duo reveal">
+        <figure class="polaroid rotate-l">
+          <img src="assets/photos/solo-01.jpg" alt="Annette at her graduation, in cap and gown, holding her diploma" loading="lazy">
+          <figcaption class="handwritten">cap, gown, nursing — earned, not given</figcaption>
+        </figure>
+        <figure class="polaroid rotate-r">
+          <img src="assets/photos/solo-03.jpg" alt="Annette speaking at a podium with a microphone" loading="lazy">
+          <figcaption class="handwritten">and now people actually listen when you talk</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACT VII — HER AT 25 ============ -->
+  <section class="act act-gold" id="act-25" data-theme="gold">
+    <div class="act-inner center">
+      <p class="reveal eyebrow">look how far you've come</p>
+      <h2 class="reveal display-lg">Twenty-five<br>looks good on you.</h2>
+
+      <figure class="photo-hero big reveal">
+        <img src="assets/photos/solo-02.jpg" alt="Annette in an elegant black sequined saree, on a sunlit balcony" loading="lazy">
+      </figure>
+
+      <p class="reveal body-lg dim">
+        Every ridiculous nickname, every chaotic photo, every year on this scroll — it all
+        led here. Still kind. Still sweet. Still capable of getting mad at me in about
+        four seconds flat. Twenty-five suits you.
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ ACT VIII — THE QUIET PART ============ -->
+  <section class="act act-plum" id="act-quiet" data-theme="plum">
+    <div class="act-inner center">
+      <p class="reveal eyebrow light">no jokes for a minute</p>
+
+      <figure class="photo-hero quiet reveal">
+        <img src="assets/photos/us-12.jpg" alt="A tight, warm hug between Annette and her brother" loading="lazy">
+      </figure>
+
+      <div class="quiet-message" id="quiet-message">
+        <p class="quiet-line">I don't say this enough, so let me say it properly, once.</p>
+        <p class="quiet-line">I am genuinely lucky to have you as my sister.</p>
+        <p class="quiet-line">You've always been someone who takes care of people —
+          I just happened to get a front row seat to it, my whole life.</p>
+        <p class="quiet-line">You pamper me more than you probably even realize you do.</p>
+        <p class="quiet-line">So here's my end of it: I'll keep giving you the princess treatment.</p>
+        <p class="quiet-line">I'll keep cooking for you.</p>
+        <p class="quiet-line">I'll keep showing up at the station, every single time.</p>
+        <p class="quiet-line">I'll keep annoying you, on purpose, because it's my job.</p>
+        <p class="quiet-line">And I'll keep calling you Moti, Takli, Pluppy, Chundu, Muthus, cutu,
+          Shutumani, etc. whether you like it or not. hehe</p>
+        <p class="quiet-line emphasis">But underneath all those names — you're my Chechi!.</p>
+        <p class="quiet-line emphasis">And I hope you always, always know how loved you are.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ACT IX — THE BIRTHDAY ============ -->
+  <section class="act act-teal-deep" id="act-birthday" data-theme="teal-deep">
+    <div class="act-inner center">
+      <div class="date-reveal" id="date-reveal">
+        <span class="date-part" data-target="24">00</span>
+        <span class="date-sep">•</span>
+        <span class="date-part" data-target="08">00</span>
+        <span class="date-sep">•</span>
+        <span class="date-part" data-target="2001">0000</span>
+      </div>
+
+      <div class="photo-ring" id="photo-ring" aria-hidden="true">
+        <img src="assets/photos/child-01.jpg" alt="">
+        <img src="assets/photos/us-05.jpg" alt="">
+        <img src="assets/photos/solo-02.jpg" alt="">
+        <img src="assets/photos/us-09.jpg" alt="">
+        <img src="assets/photos/trip-03.jpg" alt="">
+        <img src="assets/photos/us-17.jpg" alt="">
+        <img src="assets/photos/formal-07.jpg" alt="">
+        <img src="assets/photos/child-03.jpg" alt="">
+        <img src="assets/photos/solo-01.jpg" alt="">
+        <img src="assets/photos/us-10.jpg" alt="">
+        <img src="assets/photos/grow-03.jpg" alt="">
+      </div>
+
+      <h2 class="years-line" id="years-line">25 years of Annette.</h2>
+      <p class="years-sub light dim">and every single one of them, and i love u soo soo much 
+        I'm glad I got to be your brother for.</p>
+
+      <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+    </div>
+  </section>
+
+  <!-- ============ ACT X — FINALE ============ -->
+  <section class="act" id="act-finale" data-theme="warm">
+    <div class="act-inner center">
+      <p class="reveal eyebrow">last thing, I promise</p>
+      <h2 class="reveal display-md">One more, before you go.</h2>
+      <p class="reveal body-lg dim">Hold the candle. Actually hold it — don't just tap.</p>
+
+      <div class="candle-wrap reveal">
+        <svg class="candle-svg" viewBox="0 0 120 200" aria-hidden="true">
+          <rect x="50" y="90" width="20" height="90" rx="4" fill="var(--gold)"/>
+          <rect x="50" y="90" width="20" height="90" rx="4" fill="url(#candleStripe)" opacity="0.35"/>
+          <defs>
+            <linearGradient id="candleStripe" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#fff" stop-opacity="0.6"/>
+              <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <ellipse id="flame" cx="60" cy="70" rx="14" ry="26" fill="#FFD37A"/>
+          <ellipse cx="60" cy="76" rx="7" ry="14" fill="#FF8A3D"/>
+        </svg>
+        <button class="candle-hold" id="candle-hold" aria-label="Press and hold to make a wish">
+          <svg class="candle-ring" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="45" />
+          </svg>
+          <span>press &amp; hold</span>
+        </button>
+      </div>
+
+      <div class="final-message" id="final-message">
+        <p class="display-md">Happy birthday, Pluppy.</p>
+        <p class="body-lg dim">Twenty-five looks incredible on you. I love you, chaos and all.</p>
+        <p class="signature handwritten-inline">— your brother, always the Moti to your Takli (or is it the other way around hehe)</p>
+      </div>
+
+      <figure class="final-photo" id="final-photo">
+        <img src="assets/photos/formal-04.jpg" alt="Annette and her brother, close together, looking at each other and smiling" loading="lazy">
+      </figure>
+
+      <button class="replay-button" id="replay-button">watch it again ↑</button>
+
+      <p class="credits" id="credits">built with way too many late nights, for my dear ponnu ❤️ LOVE U SOO MUCHH!!</p>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/script.js"></script>
+</body>
+</html>
