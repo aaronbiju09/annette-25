@@ -9,24 +9,32 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
  /* ---------------------------------------------------------
-   0. Audio engine (Web Audio API - soft emotional ambience)
+   0. Audio engine
+   Soft emotional birthday ambience
    --------------------------------------------------------- */
 const Audio_ = (() => {
   let ctx = null;
   let masterGain = null;
   let enabled = false;
-  let started = false;
   let ambientTimer = null;
+  let ambientStarted = false;
 
   function ensureCtx() {
     if (!ctx) {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
+
+      if (!AC) {
+        console.warn('Web Audio API is not supported.');
+        return null;
+      }
 
       ctx = new AC();
 
       masterGain = ctx.createGain();
-      masterGain.gain.value = 0.32;
+
+      // Overall volume
+      masterGain.gain.value = 0.28;
+
       masterGain.connect(ctx.destination);
     }
 
@@ -37,139 +45,165 @@ const Audio_ = (() => {
     return ctx;
   }
 
-  /* Soft emotional background melody */
-  function playAmbientNote(freq, duration = 2.8, volume = 0.035) {
+  /* -------------------------------------------------------
+     Play one soft note
+     ------------------------------------------------------- */
+  function pluck(
+    freq = 660,
+    dur = 1.5,
+    type = 'sine',
+    vol = 0.08,
+    delay = 0
+  ) {
     const c = ensureCtx();
+
     if (!c || !enabled) return;
 
-    const now = c.currentTime;
+    const t0 = c.currentTime + delay;
 
     const osc = c.createOscillator();
     const gain = c.createGain();
     const filter = c.createBiquadFilter();
 
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, now);
+    osc.type = type;
 
+    osc.frequency.setValueAtTime(freq, t0);
+
+    /* Soft, warm tone */
     filter.type = 'lowpass';
-    filter.frequency.value = 1200;
+    filter.frequency.setValueAtTime(1400, t0);
     filter.Q.value = 0.4;
 
-    gain.gain.setValueAtTime(0.0001, now);
+    /* Start almost silent */
+    gain.gain.setValueAtTime(0.0001, t0);
 
-    // Gentle fade in
+    /* Gentle fade in */
     gain.gain.exponentialRampToValueAtTime(
-      volume,
-      now + 0.8
+      vol,
+      t0 + 0.25
     );
 
-    // Gentle fade out
+    /* Long emotional fade out */
     gain.gain.exponentialRampToValueAtTime(
       0.0001,
-      now + duration
+      t0 + dur
     );
 
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(masterGain);
 
-    osc.start(now);
-    osc.stop(now + duration + 0.1);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.1);
   }
 
+  /* -------------------------------------------------------
+     Emotional background melody
+     ------------------------------------------------------- */
   function startAmbient() {
     const c = ensureCtx();
-    if (!c || started) return;
 
-    started = true;
+    if (!c || !enabled || ambientStarted) return;
 
-    // Warm, emotional progression
-    const melody = [
-      261.63, // C
-      329.63, // E
-      392.00, // G
-      329.63, // E
+    ambientStarted = true;
 
-      293.66, // D
-      349.23, // F
-      440.00, // A
-      349.23, // F
+    /*
+      Emotional progression:
 
-      261.63, // C
-      329.63, // E
-      392.00, // G
-      523.25  // high C
+      C - E - G - E
+      D - F - A - F
+      C - E - G - C
+
+      Very soft and slow.
+    */
+
+    const notes = [
+      261.63, // C4
+      329.63, // E4
+      392.00, // G4
+      329.63, // E4
+
+      293.66, // D4
+      349.23, // F4
+      440.00, // A4
+      349.23, // F4
+
+      261.63, // C4
+      329.63, // E4
+      392.00, // G4
+      523.25  // C5
     ];
 
     let index = 0;
 
-    function nextNote() {
-      if (!enabled) return;
+    function playNext() {
+      if (!enabled) {
+        ambientStarted = false;
+        return;
+      }
 
-      playAmbientNote(
-        melody[index],
-        3.2,
-        0.035
+      const note = notes[index];
+
+      /*
+        Main soft note
+      */
+      pluck(
+        note,
+        2.8,
+        'sine',
+        0.055
       );
 
-      index = (index + 1) % melody.length;
+      /*
+        Very quiet higher harmonic
+        makes it feel more emotional
+        instead of sounding like a beep.
+      */
+      pluck(
+        note * 2,
+        2.2,
+        'sine',
+        0.012,
+        0.15
+      );
+
+      index++;
+
+      if (index >= notes.length) {
+        index = 0;
+      }
+
+      ambientTimer = setTimeout(
+        playNext,
+        1800
+      );
     }
 
-    nextNote();
-
-    ambientTimer = setInterval(nextNote, 2400);
+    playNext();
   }
 
+  /* -------------------------------------------------------
+     Stop background ambience
+     ------------------------------------------------------- */
   function stopAmbient() {
     if (ambientTimer) {
-      clearInterval(ambientTimer);
+      clearTimeout(ambientTimer);
       ambientTimer = null;
     }
 
-    started = false;
+    ambientStarted = false;
   }
 
-  /* Small interaction sound */
-  function pluck(
-    freq = 660,
-    dur = 0.4,
-    type = 'sine',
-    vol = 0.12,
-    delay = 0
-  ) {
-    const c = ensureCtx();
-    if (!c || !enabled) return;
-
-    const t0 = c.currentTime + delay;
-
-    const osc = c.createOscillator();
-    const g = c.createGain();
-
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, t0);
-
-    g.gain.setValueAtTime(0.0001, t0);
-
-    g.gain.exponentialRampToValueAtTime(
-      vol,
-      t0 + 0.03
-    );
-
-    g.gain.exponentialRampToValueAtTime(
-      0.0001,
-      t0 + dur
-    );
-
-    osc.connect(g);
-    g.connect(masterGain);
-
-    osc.start(t0);
-    osc.stop(t0 + dur + 0.05);
-  }
-
-  /* Emotional opening chime */
+  /* -------------------------------------------------------
+     Opening / celebration chime
+     ------------------------------------------------------- */
   function chime(
-    notes = [523.25, 659.25, 783.99, 1046.5],
+    notes = [
+      523.25,
+      659.25,
+      783.99,
+      1046.5
+    ],
     gap = 0.13
   ) {
     notes.forEach((n, i) => {
@@ -183,34 +217,53 @@ const Audio_ = (() => {
     });
   }
 
-  /* Tiny button sound */
+  /* -------------------------------------------------------
+     Small button click
+     ------------------------------------------------------- */
   function tick() {
     pluck(
       880,
       0.12,
       'triangle',
-      0.07
+      0.06
     );
   }
 
-  /* Soft low sound */
+  /* -------------------------------------------------------
+     Soft interaction sound
+     ------------------------------------------------------- */
   function soft() {
     pluck(
       220,
       0.7,
       'sine',
-      0.08
+      0.07
     );
   }
 
+  /* -------------------------------------------------------
+     Enable / disable audio
+     ------------------------------------------------------- */
   function setEnabled(v) {
     enabled = v;
 
-    const c = ensureCtx();
-    if (!c) return;
-
     if (v) {
-      startAmbient();
+      const c = ensureCtx();
+
+      if (!c) return;
+
+      /*
+        Start ambience only after user interaction.
+        This avoids browser autoplay restrictions.
+      */
+      if (c.state === 'suspended') {
+        c.resume().then(() => {
+          startAmbient();
+        });
+      } else {
+        startAmbient();
+      }
+
     } else {
       stopAmbient();
     }
@@ -222,11 +275,40 @@ const Audio_ = (() => {
     chime,
     tick,
     soft,
+
     get enabled() {
       return enabled;
     }
   };
 })();
+
+  /* ---------------------------------------------------------
+     1. Gate
+     --------------------------------------------------------- */
+  const gate = document.getElementById('gate');
+  const gateOpenBtn = document.getElementById('gate-open');
+  const soundToggle = document.getElementById('sound-toggle');
+  const body = document.body;
+
+  gateOpenBtn.addEventListener('click', () => {
+    Audio_.setEnabled(true);
+    soundToggle.setAttribute('aria-pressed', 'true');
+    Audio_.chime([392, 523.25, 659.25]);
+    gate.classList.add('opened');
+    body.classList.add('story-active');
+    body.classList.remove('locked');
+    // gentle scroll nudge so it's obvious the page moves
+    setTimeout(() => {
+      window.scrollBy({ top: 2, behavior: 'smooth' });
+    }, 900);
+  });
+
+  soundToggle.addEventListener('click', () => {
+    const isOn = soundToggle.getAttribute('aria-pressed') === 'true';
+    soundToggle.setAttribute('aria-pressed', String(!isOn));
+    Audio_.setEnabled(!isOn);
+    if (!isOn) Audio_.tick();
+  });
 
   /* ---------------------------------------------------------
      2. Reveal on scroll
