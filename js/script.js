@@ -32,41 +32,9 @@
     }
 
     function startAmbient() {
-      const c = ensureCtx();
-      if (!c || started) return;
-      started = true;
-      const bus = c.createGain();
-      bus.gain.value = 0;
-      bus.connect(masterGain);
+  return;
+}
 
-      const freqs = [130.81, 164.81, 196.0]; // C3 E3 G3 - soft warm pad
-      freqs.forEach((f, i) => {
-        const osc = c.createOscillator();
-        osc.type = 'sine';
-        osc.frequency.value = f;
-        const g = c.createGain();
-        g.gain.value = 0.09 - i * 0.02;
-        const filter = c.createBiquadFilter();
-        filter.type = 'lowpass';
-        filter.frequency.value = 800;
-        // slow LFO drift
-        const lfo = c.createOscillator();
-        lfo.frequency.value = 0.05 + i * 0.02;
-        const lfoGain = c.createGain();
-        lfoGain.gain.value = 3 + i;
-        lfo.connect(lfoGain);
-        lfoGain.connect(osc.frequency);
-        osc.connect(filter);
-        filter.connect(g);
-        g.connect(bus);
-        osc.start();
-        lfo.start();
-        ambientNodes.push(osc, lfo);
-      });
-      bus.gain.linearRampToValueAtTime(1, c.currentTime + 3);
-      ambientNodes.push(bus);
-      Audio_._bus = bus;
-    }
 
     function pluck(freq = 660, dur = 0.4, type = 'sine', vol = 0.18, delay = 0) {
       const c = ensureCtx();
